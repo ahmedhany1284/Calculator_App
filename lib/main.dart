@@ -1,7 +1,7 @@
 import 'package:calculator/component.dart';
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
-
+import 'dart:math';
 void main() {
   runApp(MyApp());
 }
@@ -105,19 +105,58 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
     );
   }
 
+
   void _calculate() {
     try {
       Parser p = Parser();
       ContextModel cm = ContextModel();
-      Expression exp = p.parse(operation.replaceAll('x', '*'));
+
+      String operationWithTrigFunctions = operation
+          .replaceAllMapped(RegExp(r'sin(\d+)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateSin(angle).toString();
+      })
+          .replaceAllMapped(RegExp(r'cos(\d+)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateCos(angle).toString();
+      })
+          .replaceAllMapped(RegExp(r'tan(\d+)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateTan(angle).toString();
+      })
+          .replaceAll('x', '*');
+
+      Expression exp = p.parse(operationWithTrigFunctions);
+
       result = exp.evaluate(EvaluationType.REAL, cm);
       showResult = true;
-      setState(() {});
+      // print('Expression: $operation');
+      // print('Evaluated Expression: $exp');
+      // print('Result: $result');
     } catch (e) {
-      showCustomToast(e.toString().replaceAll(RegExp(r'.*?:'), '').trim());
       print(e);
     }
   }
+
+
+
+  double calculateSin(double degrees) {
+    double radians = degrees * (pi / 180);
+    return sin(radians);
+  }
+  double calculateCos(double degrees) {
+    double radians = degrees * (pi / 180);
+    return cos(radians);
+  }
+
+  double calculateTan(double degrees) {
+    double radians = degrees * (pi / 180);
+    return tan(radians);
+  }
+
 
   Widget _buttonsRow(List<String> buttons) {
     return Row(
