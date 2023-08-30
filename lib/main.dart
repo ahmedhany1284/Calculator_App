@@ -112,6 +112,21 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
       ContextModel cm = ContextModel();
 
       String operationWithTrigFunctions = operation
+          .replaceAllMapped(RegExp(r'sin\((\d+)\)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateSin(angle).toString();
+      })
+          .replaceAllMapped(RegExp(r'cos\((\d+)\)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateCos(angle).toString();
+      })
+          .replaceAllMapped(RegExp(r'tan\((\d+)\)'), (Match match) {
+        var x = match.group(1);
+        double angle = double.tryParse(x ?? '0') ?? 0;
+        return calculateTan(angle).toString();
+      })
           .replaceAllMapped(RegExp(r'sin(\d+)'), (Match match) {
         var x = match.group(1);
         double angle = double.tryParse(x ?? '0') ?? 0;
@@ -133,13 +148,14 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
 
       result = exp.evaluate(EvaluationType.REAL, cm);
       showResult = true;
-      // print('Expression: $operation');
-      // print('Evaluated Expression: $exp');
-      // print('Result: $result');
+      print('Expression: $operation');
+      print('Evaluated Expression: $exp');
+      print('Result: $result');
     } catch (e) {
       print(e);
     }
   }
+
 
 
 
