@@ -1,125 +1,228 @@
+import 'package:calculator/component.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      title: 'Calculator',
+      home: CalculatorNeuApp(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+const Color colorDark = Color(0xFF374352);
+const Color colorLight = Color(0xFFe6eeff);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class CalculatorNeuApp extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _CalculatorNeuAppState createState() => _CalculatorNeuAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
+  bool darkMode = false;
+  String ans = '';
+  String operation = '';
+  double result = 0;
+  bool showResult = false;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      backgroundColor: darkMode ? colorDark : colorLight,
+      body: Padding(
+        padding: const EdgeInsets.all(18),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 20.0,),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        darkMode = !darkMode;
+                      });
+                    },
+                    child: _switchMode(),
+                  ),
+                  SizedBox(height: 80),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '=',
+                        style: TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                            color: darkMode ? Colors.green : Colors.grey),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _calculate();
+                        },
+                        child: Text(
+                          operation,
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: darkMode ? Colors.green : Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                       result.toString() ,
+                      style: TextStyle(
+                          fontSize:  40,
+                          fontWeight: FontWeight.bold,
+                          color: darkMode ? Colors.white : Colors.grey),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 10,
+                  )
+                ],
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+
+            Column(
+              children: [
+                _buttonsRow(['C', '(', ')', '/']),
+                _buttonsRow(['sin', 'cos', 'tan', '%']),
+                _buttonsRow(['7', '8', '9', 'x']),
+                _buttonsRow(['4', '5', '6', '-']),
+                _buttonsRow(['1', '2', '3', '+']),
+                _buttonsRow(['0', '.', '⌫', '=']),
+              ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  void _calculate() {
+    try {
+      Parser p = Parser();
+      ContextModel cm = ContextModel();
+      Expression exp = p.parse(operation.replaceAll('x', '*'));
+      result = exp.evaluate(EvaluationType.REAL, cm);
+      showResult = true;
+      setState(() {});
+    } catch (e) {
+      showCustomToast(e.toString().replaceAll(RegExp(r'.*?:'), '').trim());
+      print(e);
+    }
+  }
+
+  Widget _buttonsRow(List<String> buttons) {
+    return Row(
+      children: buttons.map((buttonText) {
+        return _buttonRounded(
+          title: buttonText,
+          onPressed: () =>_buttonClick(buttonText),
+
+          textColor: buttonText == 'C' ? Colors.red : null,
+          minWidth: buttonText.length > 1 ? 80.0 : null, // Adjust the minimum width for longer texts
+        );
+      }).toList(),
+    );
+  }
+
+
+  void _buttonClick( button) {
+    setState(() {
+      if (button == '=') {
+        _calculate();
+      } else if (button == 'C') {
+        operation = '';
+        result = 0;
+        showResult = false;
+      } else if (button == '⌫') {
+        if (operation.isNotEmpty) {
+          operation = operation.substring(0, operation.length - 1);
+        }
+      } else {
+        operation += button;
+      }
+    });
+  }
+
+  Widget _buttonRounded({
+    String? title,
+    double padding = 5,
+    IconData? icon,
+    Color? iconColor,
+    Color? textColor,
+    required VoidCallback onPressed, double? minWidth,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: DesignedContainer(
+        darkMode: darkMode,
+        borderRadius: BorderRadius.circular(5),
+        padding: EdgeInsets.all(padding),
+        onPressed: onPressed,
+        child: Container(
+          width:  MediaQuery.of(context).size.width * 0.16,
+          height: MediaQuery.of(context).size.height * 0.07,
+          child: Center(
+            child: title != null
+                ? Text(
+              '$title',
+              style: TextStyle(
+                color: textColor ?? (darkMode ? Colors.white : Colors.black),
+                fontSize: 30,
+              ),
+            )
+                : Icon(
+              icon,
+              color: iconColor,
+              size: 30,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _switchMode() {
+    return DesignedContainer(
+      darkMode: darkMode,
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      borderRadius: BorderRadius.circular(40),
+      onPressed: () {
+        setState(() {
+          darkMode = !darkMode;
+        });
+      },
+      child: Container(
+        width: 70,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              Icons.wb_sunny,
+              color: darkMode ? Colors.grey : Colors.redAccent,
+            ),
+            Icon(
+              Icons.nightlight_round,
+              color: darkMode ? Colors.green : Colors.grey,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
