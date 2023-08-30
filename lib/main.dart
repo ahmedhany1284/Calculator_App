@@ -56,15 +56,8 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
                   ),
                   SizedBox(height: 80),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
-                        '=',
-                        style: TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                            color: darkMode ? Colors.green : Colors.grey),
-                      ),
                       TextButton(
                         onPressed: () {
                           _calculate();
@@ -72,8 +65,8 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
                         child: Text(
                           operation,
                           style: TextStyle(
-                              fontSize: 20,
-                              color: darkMode ? Colors.green : Colors.grey),
+                              fontSize: 35,
+                              color: darkMode ? Colors.green : Colors.redAccent),
                         ),
                       ),
                     ],
@@ -83,9 +76,9 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
                     child: Text(
                        result.toString() ,
                       style: TextStyle(
-                          fontSize:  40,
+                          fontSize:  55,
                           fontWeight: FontWeight.bold,
-                          color: darkMode ? Colors.white : Colors.grey),
+                          color: darkMode ? Colors.white : Colors.black54),
                     ),
                   ),
 
@@ -167,8 +160,7 @@ class _CalculatorNeuAppState extends State<CalculatorNeuApp> {
     Color? textColor,
     required VoidCallback onPressed, double? minWidth,
   }) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
+    return Expanded(
       child: DesignedContainer(
         darkMode: darkMode,
         borderRadius: BorderRadius.circular(5),
